@@ -1,0 +1,12 @@
+{
+  "name": "Personal Site API",
+  "description": "Go Getting Started Example App",
+  "keywords": [
+    "getting-started",
+    "go",
+    "sample",
+    "example"
+  ],
+  "website": "http://kreyzon.github.io/",
+  "repository": "http://github.com/kreyzon/site-api"
+}
