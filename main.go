@@ -1,14 +1,18 @@
 package main
 
 import (
+	"database/sql"
+	"os"
 	"site/api/config/database"
 	"site/api/config/env"
 	"site/api/config/server"
-	errorMiddleware "site/api/internal/errors"
+	errorMiddleware "site/api/internal/error"
 	"site/api/internal/logger"
 	portifolioRoute "site/api/pkg/routes"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() { // create external dependencies
@@ -16,9 +20,23 @@ func main() { // create external dependencies
 	if err != nil {
 		colorfulLogger.Fatal("fatal error initializing logger: %v\n", err)
 	}
-	postgresDB, err := database.New(database.ConfigFromEnv)
-	if err != nil {
-		colorfulLogger.Fatal("fatal error initializing database: %v\n", err)
+	var postgresDB *gorm.DB
+	if os.Getenv("DATABASE_URL") != "" {
+		sqlDB, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		if err != nil {
+			colorfulLogger.Fatal("Error opening database: %q", err)
+		}
+		postgresDB, err = gorm.Open(postgres.New(postgres.Config{
+			Conn: sqlDB,
+		}), &gorm.Config{})
+		if err != nil {
+			colorfulLogger.Fatal("fatal error initializing database: %v\n", err)
+		}
+	} else {
+		postgresDB, err = database.New(database.ConfigFromEnv)
+		if err != nil {
+			colorfulLogger.Fatal("fatal error initializing database: %v\n", err)
+		}
 	}
 	// configure application
 	app := server.Application{
