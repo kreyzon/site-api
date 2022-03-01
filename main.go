@@ -41,7 +41,7 @@ func main() { // create external dependencies
 	}
 	// configure application
 	app := server.Application{
-		Port:           env.GetDefaultInt("SERVER_PORT", 8080),
+		Port:           env.GetDefaultInt("PORT", 8080),
 		Engine:         gin.New(),
 		Routers:        make(map[string]*gin.RouterGroup),
 		BasePath:       server.BasePath,
