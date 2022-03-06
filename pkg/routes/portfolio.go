@@ -30,6 +30,7 @@ func NewRoute(app server.Application) (*route, error) {
 func (r *route) InitRoutes() {
 	r.app.RouteGroup("/portfolio")
 	r.app.Route("/portfolio", http.MethodGet, "", r.HandleGetAllPortfolios())
+	r.app.Route("/portfolio", http.MethodPost, "", r.HandleCreatePortfolio())
 }
 
 func (r *route) HandleGetAllPortfolios() gin.HandlerFunc {
@@ -41,5 +42,24 @@ func (r *route) HandleGetAllPortfolios() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, portfolios)
+	}
+}
+
+func (r *route) HandleCreatePortfolio() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		port := controllers.PortfolioDTO{}
+		err := c.Bind(&port)
+		if err != nil {
+			statusError := fmt.Errorf("failed bind body data in create portfolio: %w", err)
+			c.Error(statusError)
+			return
+		}
+		id, err := r.portfolioCtrl.Create(port)
+		if err != nil {
+			statusError := fmt.Errorf("failed read all portfolios: %w", err)
+			c.Error(statusError)
+			return
+		}
+		c.JSON(http.StatusOK, map[string]int{"id": id})
 	}
 }

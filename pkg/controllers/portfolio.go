@@ -1,6 +1,7 @@
 package controllers
 
 type PortfolioController interface {
+	Create(portfolio PortfolioDTO) (int, error)
 	ReadAll() ([]*PortfolioDTO, error)
 }
 

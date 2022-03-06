@@ -45,6 +45,25 @@ func (c *controller) ReadAll() ([]*controllers.PortfolioDTO, error) {
 	return portfoliosDTO, nil
 }
 
+func (c *controller) Create(portfolio controllers.PortfolioDTO) (int, error) {
+	portfolioDB := toDB(portfolio)
+	result := c.db.Create(&portfolioDB)
+	if result.Error != nil {
+		return 0, fmt.Errorf("error in create a portfolio: %w", result.Error)
+	}
+	return int(portfolioDB.ID), nil
+}
+
+func toDB(portfolioDTO controllers.PortfolioDTO) *models.Portfolio {
+	return &models.Portfolio{
+		Title:    portfolioDTO.Title,
+		Summary:  portfolioDTO.Summary,
+		Url:      portfolioDTO.Url,
+		ImageUrl: portfolioDTO.ImageUrl,
+		ImageAlt: portfolioDTO.ImageAlt,
+	}
+}
+
 func toDTO(portfolioDB models.Portfolio) *controllers.PortfolioDTO {
 	return &controllers.PortfolioDTO{
 		Id:       int(portfolioDB.ID),
