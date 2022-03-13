@@ -15,6 +15,7 @@ import (
 )
 
 var identityKey = "id"
+var roleKey = "role"
 
 type login struct {
 	Username string `form:"username" json:"username" binding:"required"`
@@ -34,9 +35,10 @@ func AuthHandler(logger logger.Logger, db *gorm.DB) *jwt.GinJWTMiddleware {
 		MaxRefresh:  time.Hour,
 		IdentityKey: identityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*User); ok {
+			if v, ok := data.(User); ok {
 				return jwt.MapClaims{
 					identityKey: v.UserName,
+					roleKey:     v.Role,
 				}
 			}
 			return jwt.MapClaims{}
@@ -45,6 +47,7 @@ func AuthHandler(logger logger.Logger, db *gorm.DB) *jwt.GinJWTMiddleware {
 			claims := jwt.ExtractClaims(c)
 			return &User{
 				UserName: claims[identityKey].(string),
+				Role:     ParseRole(claims[roleKey].(string)),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -62,7 +65,7 @@ func AuthHandler(logger logger.Logger, db *gorm.DB) *jwt.GinJWTMiddleware {
 			return User{
 				UserName: user.Username,
 				FullName: user.Fullname,
-				Role:     Roles(user.Role),
+				Role:     ParseRole(user.Role),
 			}, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {

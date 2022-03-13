@@ -14,3 +14,16 @@ const (
 	BASIC  Roles = "basic"
 	NONE   Roles = "none"
 )
+
+func ParseRole(role string) Roles {
+	switch role {
+	case "admin":
+		return ADMIN
+	case "editor":
+		return EDITOR
+	case "basic":
+		return BASIC
+	default:
+		return NONE
+	}
+}

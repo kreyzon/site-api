@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"site/api/internal/logger"
 
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -30,6 +31,7 @@ type Application struct {
 	globalMiddlewares []gin.HandlerFunc
 	DatabaseClient    *gorm.DB
 	Logger            logger.Logger
+	AuthModule        *jwt.GinJWTMiddleware
 }
 
 func (app *Application) RouteGroup(name string) *gin.RouterGroup {

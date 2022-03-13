@@ -30,7 +30,12 @@ func NewRoute(app server.Application) (*route, error) {
 func (r *route) InitRoutes() {
 	r.app.RouteGroup("/portfolio")
 	r.app.Route("/portfolio", http.MethodGet, "", r.HandleGetAllPortfolios())
-	r.app.Route("/portfolio", http.MethodPost, "", r.HandleCreatePortfolio())
+	// protected routes
+	portfolioAdmin := r.app.RouteGroup("/portfolio-admin")
+	portfolioAdmin.Use(r.app.AuthModule.MiddlewareFunc())
+	{
+		r.app.Route("/portfolio-admin", http.MethodPost, "", r.HandleCreatePortfolio())
+	}
 }
 
 func (r *route) HandleGetAllPortfolios() gin.HandlerFunc {
