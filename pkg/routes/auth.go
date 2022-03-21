@@ -25,6 +25,7 @@ func (r *routeAuth) InitRoutes() {
 	authGroup.Use(r.app.AuthModule.MiddlewareFunc())
 	{
 		r.app.Route("/auth", http.MethodPost, "/logout", r.app.AuthModule.LogoutHandler)
+		r.app.Route("/auth", http.MethodPost, "/me", r.Preflight())
 	}
 	r.app.Route("/auth", http.MethodGet, "/refresh_token", r.app.AuthModule.RefreshHandler)
 }
